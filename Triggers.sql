@@ -75,4 +75,17 @@ END;
 
 --Then test the trigger
 
+--Fourth Trigger
 
+--Create a sequence CREATE SEQUENCE AuditID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+CREATE OR REPLACE TRIGGER AuditPasswordChange
+AFTER UPDATE OF Password ON Users
+FOR EACH ROW
+BEGIN
+  INSERT INTO AuditTrail (AuditID, UserID, Action, Timestamp)
+  VALUES (AuditID_SEQ.NEXTVAL, :NEW.UserID, 'Password changed', SYSDATE);
+END;
+/
+
+--Then Test the trigger
