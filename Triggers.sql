@@ -89,3 +89,20 @@ END;
 /
 
 --Then Test the trigger
+
+
+--Fifth Trigger
+
+--sequences already created ( we need logid sequence)
+
+CREATE OR REPLACE TRIGGER LogUserProfileUpdate
+AFTER UPDATE ON UserProfiles
+FOR EACH ROW
+BEGIN
+  INSERT INTO Logs (LogID, UserID, Action, Timestamp)
+  VALUES (LogID_SEQ.NEXTVAL, :NEW.UserID, 'User profile updated', SYSDATE);
+END;
+/
+
+--Then Test the trigger
+
