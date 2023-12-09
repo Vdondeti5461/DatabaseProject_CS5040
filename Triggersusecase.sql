@@ -41,6 +41,16 @@ WHERE ProfileID = [Your ProfileID];
 -- Query the Logs table to verify the trigger action
 SELECT * FROM Logs WHERE UserID = [Your UserID] AND Action = 'User profile updated';
 
+--sixth trigger use case
+
+-- Update an order's status (replace OrderID with an actual value and set a new status)
+UPDATE Orders
+SET Status = 'NewStatus'
+WHERE OrderID = [Your OrderID];
+
+-- Query the Notifications table to verify the trigger action
+SELECT * FROM Notifications WHERE UserID = [Associated UserID with Order];
+
 
 -- Query the AuditTrail table to verify the trigger action
 SELECT * FROM AuditTrail WHERE UserID = [Your UserID];
