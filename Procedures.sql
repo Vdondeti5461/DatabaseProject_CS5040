@@ -131,3 +131,34 @@ EXCEPTION
     RAISE_APPLICATION_ERROR(-20013, 'Error occurred: ' || SQLERRM);
 END;
 /
+
+--Fifth Procedure
+
+CREATE SEQUENCE seq_DepositID START WITH 16 INCREMENT BY 1; -- will start the sequence by next deposit
+
+--procedure
+
+CREATE OR REPLACE PROCEDURE RecordDeposit(
+    p_UserID IN Users.UserID%TYPE,
+    p_Amount IN DECIMAL)
+IS
+  v_WalletID Wallets.WalletID%TYPE;
+BEGIN
+  -- Retrieve the WalletID for the given UserID
+  SELECT WalletID INTO v_WalletID
+  FROM Wallets
+  WHERE UserID = p_UserID;
+
+  -- Insert the deposit into the Deposits table
+  INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
+  VALUES (seq_DepositID.NEXTVAL, v_WalletID, p_Amount, SYSDATE);
+
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RAISE_APPLICATION_ERROR(-20018, 'User wallet not found.');
+  WHEN OTHERS THEN
+    RAISE_APPLICATION_ERROR(-20019, 'Error occurred: ' || SQLERRM);
+END;
+/
+
+
