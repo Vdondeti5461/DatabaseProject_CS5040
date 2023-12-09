@@ -31,6 +31,17 @@ UPDATE Users
 SET Password = 'newPassword'
 WHERE UserID = [Your UserID];
 
+--Fifth Tigger Use case
+
+-- Update a user's profile (replace ProfileID with an actual value)
+UPDATE UserProfiles
+SET FirstName = 'UpdatedFirstName', LastName = 'UpdatedLastName'
+WHERE ProfileID = [Your ProfileID];
+
+-- Query the Logs table to verify the trigger action
+SELECT * FROM Logs WHERE UserID = [Your UserID] AND Action = 'User profile updated';
+
+
 -- Query the AuditTrail table to verify the trigger action
 SELECT * FROM AuditTrail WHERE UserID = [Your UserID];
 
