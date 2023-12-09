@@ -1,14 +1,13 @@
 --Sequences for Procedures
 
-CREATE SEQUENCE UserID_SEQ START WITH 1 INCREMENT BY 1; -- For first Procedure
-
 CREATE SEQUENCE OrderID_SEQ START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE DetailID_SEQ START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE DepositID_SEQ START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE WithdrawalID_SEQ START WITH 1 INCREMENT BY 1;
 
 
 -- First Procedure AddNew User
+
+CREATE SEQUENCE UserID_SEQ START WITH 1 INCREMENT BY 1; -- For first Procedure
 
 CREATE OR REPLACE PROCEDURE AddNewUser(
     p_Username IN Users.Username%TYPE,
@@ -92,5 +91,43 @@ BEGIN
 EXCEPTION
   WHEN OTHERS THEN
     RAISE_APPLICATION_ERROR(-20023, 'Error occurred: ' || SQLERRM);
+END;
+/
+
+
+--procedure 4
+
+--sequence
+
+CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1;
+
+--procedure
+
+CREATE OR REPLACE PROCEDURE ProcessWithdrawal(
+    p_UserID IN Accounts.UserID%TYPE,
+    p_Amount IN NUMBER)
+IS
+  v_Balance NUMBER;
+BEGIN
+  SELECT Balance INTO v_Balance
+  FROM Accounts
+  WHERE UserID = p_UserID;
+
+  IF v_Balance < p_Amount THEN
+    RAISE_APPLICATION_ERROR(-20011, 'Insufficient funds.');
+  END IF;
+
+  UPDATE Accounts
+  SET Balance = Balance - p_Amount
+  WHERE UserID = p_UserID;
+
+  INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
+  VALUES (seq_WithdrawalID.NEXTVAL, p_UserID, p_Amount, SYSDATE);
+
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RAISE_APPLICATION_ERROR(-20012, 'Account not found.');
+  WHEN OTHERS THEN
+    RAISE_APPLICATION_ERROR(-20013, 'Error occurred: ' || SQLERRM);
 END;
 /
