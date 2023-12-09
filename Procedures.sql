@@ -162,3 +162,27 @@ END;
 /
 
 
+--sixth Procedure
+
+--create sequence CREATE SEQUENCE seq_SessionID START WITH 16 INCREMENT BY 1;
+
+--procedure
+
+CREATE OR REPLACE PROCEDURE RecordUserLogin(
+    p_UserID IN Users.UserID%TYPE,
+    p_LoginTime IN TIMESTAMP)
+IS
+BEGIN
+  INSERT INTO UserSessions (SessionID, UserID, Token, ExpiresAt)
+  VALUES (seq_SessionID.NEXTVAL, p_UserID, 'GeneratedToken', p_LoginTime + INTERVAL '7' DAY); -- Assuming token generation logic and 7 days validity
+
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RAISE_APPLICATION_ERROR(-20007, 'User not found.');
+  WHEN OTHERS THEN
+    RAISE_APPLICATION_ERROR(-20008, 'Error occurred: ' || SQLERRM);
+END;
+/
+
+
+
