@@ -106,3 +106,19 @@ END;
 
 --Then Test the trigger
 
+--6th Trigger
+
+--Create sequence CREATE SEQUENCE NotificationID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+CREATE OR REPLACE TRIGGER NotifyOrderStatusChange
+AFTER UPDATE OF Status ON Orders
+FOR EACH ROW
+WHEN (OLD.Status != NEW.Status)
+BEGIN
+  INSERT INTO Notifications (NotificationID, UserID, Message, Timestamp)
+  VALUES (NotificationID_SEQ.NEXTVAL, :NEW.UserID, 'Order ' || :NEW.OrderID || ' status changed to ' || :NEW.Status, SYSDATE);
+END;
+/
+--then test the use cae
+
+
