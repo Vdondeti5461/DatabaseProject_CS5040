@@ -45,3 +45,34 @@ END;
 
 -- then test the use case 
 
+
+--  Third Trigger
+
+--Create a sequence 'CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;'
+
+
+CREATE OR REPLACE TRIGGER VerifyBalanceBeforeWithdrawal
+BEFORE INSERT ON Withdrawals
+FOR EACH ROW
+DECLARE
+  v_Balance NUMBER;
+  v_UserID NUMBER;
+BEGIN
+  -- Retrieve UserID from WalletID
+  SELECT UserID INTO v_UserID FROM Wallets WHERE WalletID = :NEW.WalletID;
+  
+  -- Retrieve the current balance of the user
+  SELECT Balance INTO v_Balance FROM Accounts WHERE UserID = v_UserID;
+
+  IF v_Balance < :NEW.Amount THEN
+    RAISE_APPLICATION_ERROR(-20002, 'Insufficient funds for withdrawal.');
+  END IF;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RAISE_APPLICATION_ERROR(-20003, 'Account or wallet not found.');
+END;
+/
+
+--Then test the trigger
+
+
