@@ -97,3 +97,67 @@ CREATE OR REPLACE PACKAGE BODY UserManagement AS
 END UserManagement;
 /
 
+
+--second package
+
+--package specification
+
+CREATE OR REPLACE PACKAGE FinancialOperations AS
+
+    PROCEDURE ProcessWithdrawal(
+        p_UserID IN Accounts.UserID%TYPE,
+        p_Amount IN NUMBER);
+
+    PROCEDURE RecordDeposit(
+        p_UserID IN Users.UserID%TYPE,
+        p_Amount IN DECIMAL);
+
+END FinancialOperations;
+/
+
+--package body
+
+CREATE OR REPLACE PACKAGE BODY FinancialOperations AS
+
+    PROCEDURE ProcessWithdrawal(
+        p_UserID IN Accounts.UserID%TYPE,
+        p_Amount IN NUMBER) IS
+        v_Balance NUMBER;
+    BEGIN
+        SELECT Balance INTO v_Balance
+        FROM Accounts
+        WHERE UserID = p_UserID;
+
+        IF v_Balance < p_Amount THEN
+            RAISE_APPLICATION_ERROR(-20011, 'Insufficient funds.');
+        END IF;
+
+        UPDATE Accounts
+        SET Balance = Balance - p_Amount
+        WHERE UserID = p_UserID;
+
+        INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
+        VALUES (WithdrawalID_SEQ.NEXTVAL, p_UserID, p_Amount, SYSDATE);
+    END ProcessWithdrawal;
+
+    PROCEDURE RecordDeposit(
+        p_UserID IN Users.UserID%TYPE,
+        p_Amount IN DECIMAL) IS
+        v_WalletID Wallets.WalletID%TYPE;
+    BEGIN
+        SELECT WalletID INTO v_WalletID
+        FROM Wallets
+        WHERE UserID = p_UserID;
+
+        INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
+        VALUES (DepositID_SEQ.NEXTVAL, v_WalletID, p_Amount, SYSDATE);
+    END RecordDeposit;
+
+END FinancialOperations;
+/
+
+-- create sequences required
+
+CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1;
+CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1;
+
