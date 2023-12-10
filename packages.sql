@@ -156,7 +156,7 @@ CREATE OR REPLACE PACKAGE BODY FinancialOperations AS
 END FinancialOperations;
 /
 
--- create sequences required
+-- create sequences required if necessary facing error 
 
 CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1;
 CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1;
