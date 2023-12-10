@@ -1,7 +1,7 @@
 # Financial Trading Database System
 
 ## Project Overview
-This project represents a comprehensive database system designed for financial trading applications. It encompasses a robust set of SQL and PL/SQL scripts that create a complete schema with tables, procedures, functions, triggers, packages, indexes, and their respective use cases. It's ideal for anyone looking to understand or implement a database system for financial services, trading platforms, or similar applications.
+This project represents a comprehensive database system designed for financial trading applications. It encompasses a robust set of PL/SQL scripts that create a complete schema with tables, procedures, functions, triggers, packages, indexes, and their respective use cases. It's ideal for anyone looking to understand or implement a database system for financial services, trading platforms, or similar applications.
 
 ## Features
 - **Database Schema**: A complete set of tables covering users, transactions, instruments, exchanges, and more.
