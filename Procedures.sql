@@ -99,7 +99,9 @@ END;
 
 --sequence
 
-CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1;
+CREATE SEQUENCE seq_WithdrawalID 
+START WITH 16 
+INCREMENT BY 1;
 
 --procedure
 
