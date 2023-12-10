@@ -33,6 +33,13 @@ SELECT GetInstrumentType(999) FROM dual;
 SELECT GetTotalDeposits(1) FROM dual; 
 SELECT GetTotalDeposits(999) FROM dual;
 
+--Sixth procedure
+
+SELECT CalculateTotalPortfolioValue_V3(1) FROM dual; 
+SELECT CalculateTotalPortfolioValue_V3(999) FROM dual; 
+
+
+
 
 
 
