@@ -24,6 +24,8 @@ SELECT * FROM Accounts WHERE UserID = [Your UserID];
 INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
 VALUES (WithdrawalID_SEQ.NEXTVAL, [Your WalletID], [Amount Greater Than Balance], SYSDATE);
 
+--if withdrawl amount greated than balance it will throw error as insufficient funds
+
 --Fourth Trigger use case
 
 -- Update a user's password (replace UserID and Password with appropriate values)
