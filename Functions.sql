@@ -104,24 +104,25 @@ END;
 
 -- Function 6
 
-CREATE OR REPLACE FUNCTION CheckPasswordStrength(p_UserID IN Users.UserID%TYPE)
-RETURN VARCHAR2 IS
-  v_Password Users.Password%TYPE;
+CREATE OR REPLACE FUNCTION CalculateTotalPortfolioValue_V3(p_UserID IN Users.UserID%TYPE)
+RETURN DECIMAL IS
+  v_TotalValue DECIMAL(10, 2) := 0;
 BEGIN
-  SELECT Password INTO v_Password
-  FROM Users
-  WHERE UserID = p_UserID;
+  SELECT SUM(md.ClosePrice)
+  INTO v_TotalValue
+  FROM PortfolioInstruments pi
+  JOIN Instruments ins ON pi.InstrumentID = ins.InstrumentID
+  JOIN MarketData md ON ins.InstrumentID = md.InstrumentID
+  WHERE pi.PortfolioID IN (SELECT PortfolioID FROM Portfolios WHERE UserID = p_UserID);
 
-  IF LENGTH(v_Password) >= 8 THEN
-    RETURN 'TRUE';
-  ELSE
-    RETURN 'FALSE';
-  END IF;
+  RETURN NVL(v_TotalValue, 0);
 EXCEPTION
   WHEN NO_DATA_FOUND THEN
-    RAISE_APPLICATION_ERROR(-20020, 'User not found.');
+    RETURN 0; -- Return 0 if no portfolio data is found
   WHEN OTHERS THEN
-    RAISE_APPLICATION_ERROR(-20021, 'Error occurred: ' || SQLERRM);
+    RAISE_APPLICATION_ERROR(-20025, 'Error occurred: ' || SQLERRM);
 END;
 /
+
+
 
