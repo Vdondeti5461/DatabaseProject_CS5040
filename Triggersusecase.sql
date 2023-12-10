@@ -33,6 +33,8 @@ UPDATE Users
 SET Password = 'newPassword'
 WHERE UserID = [Your UserID];
 
+--after update check user table for password change for userid
+
 --Fifth Tigger Use case
 
 -- Update a user's profile (replace ProfileID with an actual value)
