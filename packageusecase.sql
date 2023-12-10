@@ -32,6 +32,25 @@ BEGIN
 END;
 /
 
+--Second package Testing use cases
+
+    --create sequence as mentioned in package file
+
+--Usecase ProcessWithdrawal:
+    
+BEGIN
+    FinancialOperations.ProcessWithdrawal([Your UserID], [Withdrawal Amount]);
+END;
+/
+
+--Usecase RecordDeposit:
+
+BEGIN
+    FinancialOperations.RecordDeposit([Your UserID], [Deposit Amount]);
+END;
+/
+
+
 
 
 
