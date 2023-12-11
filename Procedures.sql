@@ -1,10 +1,4 @@
 --Sequences for Procedures
-
-CREATE SEQUENCE OrderID_SEQ START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE DetailID_SEQ START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE DepositID_SEQ START WITH 1 INCREMENT BY 1;
-
-
 -- First Procedure AddNew User
 
 CREATE SEQUENCE UserID_SEQ START WITH 1 INCREMENT BY 1; -- For first Procedure
@@ -136,7 +130,9 @@ END;
 
 --Fifth Procedure
 
-CREATE SEQUENCE seq_DepositID START WITH 16 INCREMENT BY 1; -- will start the sequence by next deposit
+CREATE SEQUENCE seq_DepositID START WITH 16 INCREMENT BY 1; 
+
+-- will start the sequence by next deposit
 
 --procedure
 
@@ -166,7 +162,9 @@ END;
 
 --sixth Procedure
 
---create sequence CREATE SEQUENCE seq_SessionID START WITH 16 INCREMENT BY 1;
+--create sequence
+    
+    CREATE SEQUENCE seq_SessionID START WITH 16 INCREMENT BY 1;
 
 --procedure
 
