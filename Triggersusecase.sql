@@ -59,4 +59,16 @@ SELECT * FROM Notifications WHERE UserID = [Associated UserID with Order];
 -- Query the AuditTrail table to verify the trigger action
 SELECT * FROM AuditTrail WHERE UserID = [Your UserID];
 
+--Seventh Trigger Use case
+
+--Update account
+
+UPDATE Accounts
+SET Balance = Balance + 100 
+WHERE AccountID = [Some AccountID];
+
+--check logs table
+
+SELECT * FROM Logs WHERE Action = 'Account balance updated';
+
 
