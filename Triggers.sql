@@ -121,4 +121,23 @@ END;
 /
 --then test the use cae
 
+--7th Trigger
+
+--crearte sequence
+
+CREATE SEQUENCE LogsID_SEQ START WITH 16 INCREMENT BY 1;
+
+--Trigger
+
+CREATE OR REPLACE TRIGGER trg_log_balance_update
+AFTER UPDATE OF Balance ON Accounts
+FOR EACH ROW
+BEGIN
+    INSERT INTO Logs (LogID, UserID, Action, Timestamp)
+    VALUES (LogsID_SEQ.NEXTVAL, :NEW.UserID, 'Account balance updated', SYSDATE);
+END;
+/
+
+--Then test the use case statements
+
 
