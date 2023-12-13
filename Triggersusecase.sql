@@ -2,27 +2,27 @@
 
 -- Insert a mock session
 INSERT INTO UserSessions (SessionID, UserID, Token, ExpiresAt)
-VALUES (SessionID_SEQ.NEXTVAL, 8, 'Ram', SYSDATE + 7);
+VALUES (SessionID_SEQ.NEXTVAL, 9, 'Ram222', SYSDATE + 7);
 
 -- Query the Logs table to verify the trigger action
-SELECT * FROM Logs WHERE UserID = 8;
+SELECT * FROM Logs WHERE UserID = 9;
 
 
 --second trigger use case
 
 -- Insert a mock deposit (replace the WalletID and UserID with actual values from your database)
 INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
-VALUES (DepositID_SEQ.NEXTVAL, 9, 4000.00, SYSDATE);
+VALUES (DepositID_SEQ.NEXTVAL, 2, 11000.00, SYSDATE);
 
 -- Query the Accounts table to verify the trigger action (replace the UserID with the actual UserID linked to the WalletID used above)
-SELECT * FROM Accounts WHERE UserID =9;
+SELECT * FROM Accounts WHERE UserID =2;
 
 
 --Third Trigger use case
 
 -- Attempt a mock withdrawal (replace the WalletID with an actual value from your database and set an Amount greater than the account balance)
 INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
-VALUES (WithdrawalID_SEQ.NEXTVAL, 9, 33000, SYSDATE);
+VALUES (WithdrawalID_SEQ.NEXTVAL, 10, 20000, SYSDATE);
 
 --if withdrawl amount greated than balance it will throw error as insufficient funds
 
@@ -30,8 +30,8 @@ VALUES (WithdrawalID_SEQ.NEXTVAL, 9, 33000, SYSDATE);
 
 -- Update a user's password (replace UserID and Password with appropriate values)
 UPDATE Users
-SET Password = 'Pramkepepw'
-WHERE UserID = 2;
+SET Password = 'Pvarmon'
+WHERE UserID = 3;
 
 --after update check user table for password change for userid
 
@@ -39,33 +39,33 @@ WHERE UserID = 2;
 
 -- Update a user's profile (replace ProfileID with an actual value)
 UPDATE UserProfiles
-SET FirstName = 'Desi', LastName = 'Ram'
-WHERE ProfileID = 3;
+SET FirstName = 'Neuro', LastName = 'Bot'
+WHERE ProfileID = 5;
 
 -- Query the Logs table to verify the trigger action
-SELECT * FROM Logs WHERE UserID = 3 AND Action = 'User profile updated';
+SELECT * FROM Logs WHERE UserID = 5 AND Action = 'User profile updated';
 
 --sixth trigger use case
 
 -- Update an order's status (replace OrderID with an actual value and set a new status)
 UPDATE Orders
 SET Status = 'Executed'
-WHERE OrderID = 14;
+WHERE OrderID = 6;
 
 -- Query the Notifications table to verify the trigger action
-SELECT * FROM Notifications WHERE UserID = 14;
+SELECT * FROM Notifications WHERE UserID = 6;
 
 
 -- Query the AuditTrail table to verify the trigger action
-SELECT * FROM AuditTrail WHERE UserID = 14;
+SELECT * FROM AuditTrail WHERE UserID = 6;
 
 --Seventh Trigger Use case
 
 --Update account
 
 UPDATE Accounts
-SET Balance = Balance + 100 
-WHERE AccountID = 7;
+SET Balance = Balance + 1000 
+WHERE AccountID = 3;
 
 --check logs table
 
