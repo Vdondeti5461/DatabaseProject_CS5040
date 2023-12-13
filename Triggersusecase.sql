@@ -43,7 +43,7 @@ SET FirstName = 'RajaLe', LastName = 'Manra'
 WHERE ProfileID = 1;
 
 -- Query the Logs table to verify the trigger action
-SELECT * FROM Logs WHERE UserID = [Your UserID] AND Action = 'User profile updated';
+SELECT * FROM Logs WHERE UserID = 1 AND Action = 'User profile updated';
 
 --sixth trigger use case
 
