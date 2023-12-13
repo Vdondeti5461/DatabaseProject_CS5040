@@ -8,7 +8,8 @@ CREATE INDEX idx_transactions_orderid ON Transactions (OrderID);
 
 --Third Index
 
-SELECT * FROM Orders WHERE UserID = [SpecificUserID];
+CREATE INDEX idx_orders_userid ON Orders (UserID);
+
 
 
 --
