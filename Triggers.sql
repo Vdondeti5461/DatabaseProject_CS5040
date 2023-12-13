@@ -2,8 +2,8 @@
 
 --First trigger
 -- Ensure to create sequences before creating trigger . Need two sequences to test this trigger
---1 CREATE SEQUENCE SessionID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
---2 CREATE SEQUENCE LogID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+ CREATE SEQUENCE SessionID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+ CREATE SEQUENCE LogID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 --Trigger LogUserLogin
 
@@ -19,7 +19,9 @@ END;
 
 --Second Trigger 
 
--- creating a sequece CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+-- creating a sequece 
+  
+CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 
 CREATE OR REPLACE TRIGGER UpdateAccountAfterDeposit
@@ -48,7 +50,8 @@ END;
 
 --  Third Trigger
 
---Create a sequence 'CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;'
+--Create a sequence 
+  CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 
 CREATE OR REPLACE TRIGGER VerifyBalanceBeforeWithdrawal
@@ -77,7 +80,9 @@ END;
 
 --Fourth Trigger
 
---Create a sequence CREATE SEQUENCE AuditID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+--Create a sequence
+  
+  CREATE SEQUENCE AuditID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 CREATE OR REPLACE TRIGGER AuditPasswordChange
 AFTER UPDATE OF Password ON Users
@@ -108,7 +113,9 @@ END;
 
 --6th Trigger
 
---Create sequence CREATE SEQUENCE NotificationID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+--Create sequence 
+  
+  CREATE SEQUENCE NotificationID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 CREATE OR REPLACE TRIGGER NotifyOrderStatusChange
 AFTER UPDATE OF Status ON Orders
