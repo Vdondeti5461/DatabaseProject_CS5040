@@ -4,9 +4,12 @@ CREATE INDEX idx_transactions_timestamp ON Transactions (Timestamp);
 
 --second Index
 
-CREATE INDEX idx_users_username ON Users (Username);
+CREATE INDEX idx_transactions_orderid ON Transactions (OrderID);
 
 --Third Index
 
-CREATE INDEX idx_users_email ON Users (Email);
+SELECT * FROM Orders WHERE UserID = [SpecificUserID];
+
+
+--
 
