@@ -1,9 +1,11 @@
 -- triggers
 
 --First trigger
--- Ensure to create sequences before creating trigger . Need two sequences to test this trigger
- CREATE SEQUENCE SessionID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
- CREATE SEQUENCE LogID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+-- Ensure to create sequences before creating trigger, Need two sequences to test this trigger
+
+CREATE SEQUENCE SessionID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+CREATE SEQUENCE LogID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 --Trigger LogUserLogin
 
@@ -17,7 +19,7 @@ END;
 /
 
 
---Second Trigger 
+-- Second Trigger 
 
 -- creating a sequece 
   
@@ -50,8 +52,9 @@ END;
 
 --  Third Trigger
 
---Create a sequence 
-  CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+-- Create a sequence 
+ 
+CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 
 CREATE OR REPLACE TRIGGER VerifyBalanceBeforeWithdrawal
@@ -62,9 +65,11 @@ DECLARE
   v_UserID NUMBER;
 BEGIN
   -- Retrieve UserID from WalletID
+ 
   SELECT UserID INTO v_UserID FROM Wallets WHERE WalletID = :NEW.WalletID;
   
   -- Retrieve the current balance of the user
+
   SELECT Balance INTO v_Balance FROM Accounts WHERE UserID = v_UserID;
 
   IF v_Balance < :NEW.Amount THEN
@@ -82,7 +87,7 @@ END;
 
 --Create a sequence
   
-  CREATE SEQUENCE AuditID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+CREATE SEQUENCE AuditID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 CREATE OR REPLACE TRIGGER AuditPasswordChange
 AFTER UPDATE OF Password ON Users
@@ -115,7 +120,7 @@ END;
 
 --Create sequence 
   
-  CREATE SEQUENCE NotificationID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+CREATE SEQUENCE NotificationID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
 
 CREATE OR REPLACE TRIGGER NotifyOrderStatusChange
 AFTER UPDATE OF Status ON Orders
@@ -126,11 +131,12 @@ BEGIN
   VALUES (NotificationID_SEQ.NEXTVAL, :NEW.UserID, 'Order ' || :NEW.OrderID || ' status changed to ' || :NEW.Status, SYSDATE);
 END;
 /
---then test the use cae
 
---7th Trigger
+-- then test the use case 
 
---crearte sequence
+-- 7th Trigger
+
+-- create sequence
 
 CREATE SEQUENCE LogsID_SEQ START WITH 16 INCREMENT BY 1;
 
@@ -145,6 +151,6 @@ BEGIN
 END;
 /
 
---Then test the use case statements
+-- Then test the use case statements
 
 
