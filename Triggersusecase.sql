@@ -15,7 +15,7 @@ INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
 VALUES (DepositID_SEQ.NEXTVAL, 1, 1000.00, SYSDATE);
 
 -- Query the Accounts table to verify the trigger action (replace the UserID with the actual UserID linked to the WalletID used above)
-SELECT * FROM Accounts WHERE UserID = [Your UserID];
+SELECT * FROM Accounts WHERE UserID =1;
 
 
 --Third Trigger use case
