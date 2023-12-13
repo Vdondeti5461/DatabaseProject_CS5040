@@ -39,14 +39,14 @@ END;
 --Usecase ProcessWithdrawal:
     
 BEGIN
-    FinancialOperations.ProcessWithdrawal([Your UserID], [Withdrawal Amount]);
+    FinancialOperations.ProcessWithdrawal(1, 500);
 END;
 /
 
 --Usecase RecordDeposit:
 
 BEGIN
-    FinancialOperations.RecordDeposit([Your UserID], [Deposit Amount]);
+    FinancialOperations.RecordDeposit(1, 10000);
 END;
 /
 
