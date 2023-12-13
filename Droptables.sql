@@ -1,88 +1,89 @@
-BEGIN
-    -- Users Table
-    EXECUTE IMMEDIATE 'DROP TABLE Users CASCADE CONSTRAINTS';
+-- Users Table
+DROP TABLE Users CASCADE CONSTRAINTS;
 
-    -- UserProfiles Table
-    EXECUTE IMMEDIATE 'DROP TABLE UserProfiles CASCADE CONSTRAINTS';
+-- UserProfiles Table
+DROP TABLE UserProfiles CASCADE CONSTRAINTS;
 
-    -- Accounts Table
-    EXECUTE IMMEDIATE 'DROP TABLE Accounts CASCADE CONSTRAINTS';
+-- Accounts Table
+DROP TABLE Accounts CASCADE CONSTRAINTS;
 
-    -- Instruments Table
-    EXECUTE IMMEDIATE 'DROP TABLE Instruments CASCADE CONSTRAINTS';
+-- Instruments Table
+DROP TABLE Instruments CASCADE CONSTRAINTS;
 
-    -- Exchanges Table
-    EXECUTE IMMEDIATE 'DROP TABLE Exchanges CASCADE CONSTRAINTS';
+-- Exchanges Table
+DROP TABLE Exchanges CASCADE CONSTRAINTS;
 
-    -- InstrumentExchangeMapping Table
-    EXECUTE IMMEDIATE 'DROP TABLE InstrumentExchangeMapping CASCADE CONSTRAINTS';
+-- InstrumentExchangeMapping Table
+DROP TABLE InstrumentExchangeMapping CASCADE CONSTRAINTS;
 
-    -- Orders Table
-    EXECUTE IMMEDIATE 'DROP TABLE Orders CASCADE CONSTRAINTS';
+-- Orders Table
+DROP TABLE Orders CASCADE CONSTRAINTS;
 
-    -- OrderDetails Table
-    EXECUTE IMMEDIATE 'DROP TABLE OrderDetails CASCADE CONSTRAINTS';
+-- OrderDetails Table
+DROP TABLE OrderDetails CASCADE CONSTRAINTS;
 
-    -- Transactions Table
-    EXECUTE IMMEDIATE 'DROP TABLE Transactions CASCADE CONSTRAINTS';
+-- Transactions Table
+DROP TABLE Transactions CASCADE CONSTRAINTS;
 
-    -- TransactionHistory Table
-    EXECUTE IMMEDIATE 'DROP TABLE TransactionHistory CASCADE CONSTRAINTS';
+-- TransactionHistory Table
+DROP TABLE TransactionHistory CASCADE CONSTRAINTS;
 
-    -- Wallets Table
-    EXECUTE IMMEDIATE 'DROP TABLE Wallets CASCADE CONSTRAINTS';
+-- Wallets Table
+DROP TABLE Wallets CASCADE CONSTRAINTS;
 
-    -- Deposits Table
-    EXECUTE IMMEDIATE 'DROP TABLE Deposits CASCADE CONSTRAINTS';
+-- Deposits Table
+DROP TABLE Deposits CASCADE CONSTRAINTS;
 
-    -- Withdrawals Table
-    EXECUTE IMMEDIATE 'DROP TABLE Withdrawals CASCADE CONSTRAINTS';
+-- Withdrawals Table
+DROP TABLE Withdrawals CASCADE CONSTRAINTS;
 
-    -- APIKeys Table
-    EXECUTE IMMEDIATE 'DROP TABLE APIKeys CASCADE CONSTRAINTS';
+-- APIKeys Table
+DROP TABLE APIKeys CASCADE CONSTRAINTS;
 
-    -- UserSessions Table
-    EXECUTE IMMEDIATE 'DROP TABLE UserSessions CASCADE CONSTRAINTS';
+-- UserSessions Table
+DROP TABLE UserSessions CASCADE CONSTRAINTS;
 
-    -- Watchlists Table
-    EXECUTE IMMEDIATE 'DROP TABLE Watchlists CASCADE CONSTRAINTS';
+-- Watchlists Table
+DROP TABLE Watchlists CASCADE CONSTRAINTS;
 
-    -- WatchlistItems Table
-    EXECUTE IMMEDIATE 'DROP TABLE WatchlistItems CASCADE CONSTRAINTS';
+-- WatchlistItems Table
+DROP TABLE WatchlistItems CASCADE CONSTRAINTS;
 
-    -- Notifications Table
-    EXECUTE IMMEDIATE 'DROP TABLE Notifications CASCADE CONSTRAINTS';
+-- Notifications Table
+DROP TABLE Notifications CASCADE CONSTRAINTS;
 
-    -- Roles Table
-    EXECUTE IMMEDIATE 'DROP TABLE Roles CASCADE CONSTRAINTS';
+-- Roles Table
+DROP TABLE Roles CASCADE CONSTRAINTS;
 
-    -- UserRoles Table
-    EXECUTE IMMEDIATE 'DROP TABLE UserRoles CASCADE CONSTRAINTS';
+-- UserRoles Table
+DROP TABLE UserRoles CASCADE CONSTRAINTS;
 
-    -- Logs Table
-    EXECUTE IMMEDIATE 'DROP TABLE Logs CASCADE CONSTRAINTS';
+-- Logs Table
+DROP TABLE Logs CASCADE CONSTRAINTS;
 
-    -- Settings Table
-    EXECUTE IMMEDIATE 'DROP TABLE Settings CASCADE CONSTRAINTS';
+-- Settings Table
+DROP TABLE Settings CASCADE CONSTRAINTS;
 
-    -- UserGroups Table
-    EXECUTE IMMEDIATE 'DROP TABLE UserGroups CASCADE CONSTRAINTS';
+-- UserGroups Table
+DROP TABLE UserGroups CASCADE CONSTRAINTS;
 
-    -- UserGroupMembers Table
-    EXECUTE IMMEDIATE 'DROP TABLE UserGroupMembers CASCADE CONSTRAINTS';
+-- UserGroupMembers Table
+DROP TABLE UserGroupMembers CASCADE CONSTRAINTS;
 
-    -- Portfolios Table
-    EXECUTE IMMEDIATE 'DROP TABLE Portfolios CASCADE CONSTRAINTS';
+-- Portfolios Table
+DROP TABLE Portfolios CASCADE CONSTRAINTS;
 
-    -- PortfolioInstruments Table
-    EXECUTE IMMEDIATE 'DROP TABLE PortfolioInstruments CASCADE CONSTRAINTS';
+-- PortfolioInstruments Table
+DROP TABLE PortfolioInstruments CASCADE CONSTRAINTS;
 
-    -- AuditTrail Table
-    EXECUTE IMMEDIATE 'DROP TABLE AuditTrail CASCADE CONSTRAINTS';
+-- AuditTrail Table
+DROP TABLE AuditTrail CASCADE CONSTRAINTS;
 
-    -- MarketData Table
-    EXECUTE IMMEDIATE 'DROP TABLE MarketData CASCADE CONSTRAINTS';
-    
+-- MarketData Table
+DROP TABLE MarketData CASCADE CONSTRAINTS;
+
+-- Exception handling is not needed outside of a PL/SQL block.
+
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error occurred: ' || SQLERRM);
