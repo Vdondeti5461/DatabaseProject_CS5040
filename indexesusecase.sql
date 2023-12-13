@@ -9,9 +9,18 @@ SELECT * FROM Transactions WHERE Timestamp BETWEEN TO_DATE('2023-12-01', 'YYYY-M
 
 --second index Usecase
 
-SELECT * FROM Users WHERE Username = 'user1';
+SELECT * FROM Transactions WHERE OrderID = 1;
+
 
 --Third index Usecase
+
+SELECT * FROM Orders WHERE UserID = 1;
+
+--some other indexes use case which is already created
+
+
+SELECT * FROM Users WHERE Username = 'user1';
+
 SELECT * FROM Users WHERE Email = 'vamsenik123@example.com';
 
 
