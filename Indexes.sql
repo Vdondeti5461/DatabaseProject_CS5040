@@ -12,5 +12,4 @@ CREATE INDEX idx_orders_userid ON Orders (UserID);
 
 
 
---
 
