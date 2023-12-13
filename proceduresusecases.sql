@@ -3,10 +3,10 @@
 -- Create sequence, Create procedure and test below queries
 
 -- add new user
-EXECUTE AddNewUser(Nikhil, nikhil123, nikhil@example.com); 
+EXECUTE AddNewUser('Nikhil', 'nikhil123', 'nikhil@example.com'); 
 
 -- test with exisiting user and check error
-EXECUTE AddNewUser(Nikhil, nikhil123, nikhil@example.com); 
+EXECUTE AddNewUser('Nikhil', 'nikhil123', 'nikhil@example.com');
 
 -- second procedure
 -- No sequence is required as we are updating
