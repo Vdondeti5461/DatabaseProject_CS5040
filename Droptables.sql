@@ -82,10 +82,4 @@ DROP TABLE AuditTrail CASCADE CONSTRAINTS;
 -- MarketData Table
 DROP TABLE MarketData CASCADE CONSTRAINTS;
 
--- Exception handling is not needed outside of a PL/SQL block.
 
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE('Error occurred: ' || SQLERRM);
-END;
-/
