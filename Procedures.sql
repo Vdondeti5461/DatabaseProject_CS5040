@@ -1,7 +1,7 @@
 --Sequences for Procedures
 -- First Procedure AddNew User
 
-CREATE SEQUENCE UserID_SEQ START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE UserID_SEQ START WITH 16 INCREMENT BY 1;
 
 CREATE OR REPLACE PROCEDURE AddNewUser(
     p_Username IN Users.Username%TYPE,
