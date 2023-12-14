@@ -1,0 +1,315 @@
+SQL> 
+SQL> -- Execute the script file.
+SQL> start &&1
+SQL> -- Create Users Table
+SQL> CREATE TABLE Users (
+  2  	 UserID INT PRIMARY KEY,
+  3  	 Username VARCHAR2(255) UNIQUE NOT NULL,
+  4  	 Password VARCHAR2(255) NOT NULL,
+  5  	 Email VARCHAR2(255) UNIQUE NOT NULL,
+  6  	 CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  7  	 UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  8  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Roles Table
+SQL> CREATE TABLE Roles (
+  2  	 RoleID INT PRIMARY KEY,
+  3  	 Name VARCHAR2(255) UNIQUE NOT NULL
+  4  );
+
+Table created.
+
+SQL> 
+SQL> -- Create UserGroups Table
+SQL> CREATE TABLE UserGroups (
+  2  	 GroupID INT PRIMARY KEY,
+  3  	 Name VARCHAR2(255) UNIQUE NOT NULL,
+  4  	 Description VARCHAR2(500)
+  5  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Instruments Table
+SQL> CREATE TABLE Instruments (
+  2  	 InstrumentID INT PRIMARY KEY,
+  3  	 Name VARCHAR2(255) UNIQUE NOT NULL,
+  4  	 Symbol VARCHAR2(10) UNIQUE NOT NULL,
+  5  	 Type VARCHAR2(50) NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Exchanges Table
+SQL> CREATE TABLE Exchanges (
+  2  	 ExchangeID INT PRIMARY KEY,
+  3  	 Name VARCHAR2(255) UNIQUE NOT NULL,
+  4  	 Country VARCHAR2(255) NOT NULL,
+  5  	 Currency VARCHAR2(3) NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create UserProfiles Table
+SQL> CREATE TABLE UserProfiles (
+  2  	 ProfileID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 FirstName VARCHAR2(255) NOT NULL,
+  5  	 LastName VARCHAR2(255) NOT NULL,
+  6  	 DOB DATE NOT NULL,
+  7  	 Country VARCHAR2(255) NOT NULL
+  8  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Accounts Table
+SQL> CREATE TABLE Accounts (
+  2  	 AccountID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Balance DECIMAL(10, 2) CHECK (Balance >= 0),
+  5  	 Currency VARCHAR2(3) NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Wallets Table
+SQL> CREATE TABLE Wallets (
+  2  	 WalletID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Currency VARCHAR2(3) NOT NULL,
+  5  	 Balance DECIMAL(10, 2) CHECK (Balance >= 0)
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create APIKeys Table
+SQL> CREATE TABLE APIKeys (
+  2  	 KeyID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 APIKey VARCHAR2(255) UNIQUE NOT NULL,
+  5  	 APISecret VARCHAR2(255) UNIQUE NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create UserSessions Table
+SQL> CREATE TABLE UserSessions (
+  2  	 SessionID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Token VARCHAR2(255) UNIQUE NOT NULL,
+  5  	 ExpiresAt TIMESTAMP NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create UserRoles Table
+SQL> CREATE TABLE UserRoles (
+  2  	 UserRoleID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 RoleID INT REFERENCES Roles(RoleID)
+  5  );
+
+Table created.
+
+SQL> 
+SQL> -- Create UserGroupMembers Table
+SQL> CREATE TABLE UserGroupMembers (
+  2  	 UserGroupMemberID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 GroupID INT REFERENCES UserGroups(GroupID)
+  5  );
+
+Table created.
+
+SQL> 
+SQL> -- Create InstrumentExchangeMapping Table
+SQL> CREATE TABLE InstrumentExchangeMapping (
+  2  	 MappingID INT PRIMARY KEY,
+  3  	 InstrumentID INT REFERENCES Instruments(InstrumentID),
+  4  	 ExchangeID INT REFERENCES Exchanges(ExchangeID),
+  5  	 CONSTRAINT instrument_exchange_unique UNIQUE (InstrumentID, ExchangeID)
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Orders Table
+SQL> CREATE TABLE Orders (
+  2  	 OrderID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 InstrumentID INT REFERENCES Instruments(InstrumentID),
+  5  	 Type VARCHAR2(50) CHECK (Type IN ('Buy', 'Sell')) NOT NULL,
+  6  	 Status VARCHAR2(50) CHECK (Status IN ('Open', 'Closed', 'Cancelled', 'Executed')) NOT NULL,
+  7  	 CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  8  	 UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  9  );
+
+Table created.
+
+SQL> 
+SQL> -- Create OrderDetails Table
+SQL> CREATE TABLE OrderDetails (
+  2  	 DetailID INT PRIMARY KEY,
+  3  	 OrderID INT REFERENCES Orders(OrderID),
+  4  	 Price DECIMAL(10, 2) CHECK (Price > 0) NOT NULL,
+  5  	 Quantity INT CHECK (Quantity > 0) NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Transactions Table
+SQL> CREATE TABLE Transactions (
+  2  	 TransactionID INT PRIMARY KEY,
+  3  	 OrderID INT REFERENCES Orders(OrderID),
+  4  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  5  );
+
+Table created.
+
+SQL> 
+SQL> -- Create TransactionHistory Table
+SQL> CREATE TABLE TransactionHistory (
+  2  	 HistoryID INT PRIMARY KEY,
+  3  	 TransactionID INT REFERENCES Transactions(TransactionID),
+  4  	 Status VARCHAR2(255) CHECK (Status IN ('Success', 'Pending', 'Failed')),
+  5  	 Message VARCHAR2(255)
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create a Deposits Table
+SQL> CREATE TABLE Deposits (
+  2  	 DepositID INT PRIMARY KEY,
+  3  	 WalletID INT REFERENCES Wallets(WalletID),
+  4  	 Amount DECIMAL(10, 2) CHECK (Amount > 0),
+  5  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Withdrawals Table
+SQL> CREATE TABLE Withdrawals (
+  2  	 WithdrawalID INT PRIMARY KEY,
+  3  	 WalletID INT REFERENCES Wallets(WalletID),
+  4  	 Amount DECIMAL(10, 2) CHECK (Amount > 0),
+  5  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Watchlists Table
+SQL> CREATE TABLE Watchlists (
+  2  	 WatchlistID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID)
+  4  );
+
+Table created.
+
+SQL> 
+SQL> -- Create WatchlistItems Table
+SQL> CREATE TABLE WatchlistItems (
+  2  	 ItemID INT PRIMARY KEY,
+  3  	 WatchlistID INT REFERENCES Watchlists(WatchlistID),
+  4  	 InstrumentID INT REFERENCES Instruments(InstrumentID)
+  5  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Notifications Table
+SQL> CREATE TABLE Notifications (
+  2  	 NotificationID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Message VARCHAR2(500) NOT NULL,
+  5  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Logs Table
+SQL> CREATE TABLE Logs (
+  2  	 LogID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Action VARCHAR2(500) NOT NULL,
+  5  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Settings Table
+SQL> CREATE TABLE Settings (
+  2  	 SettingID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Key VARCHAR2(255) NOT NULL,
+  5  	 Value VARCHAR2(500) NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create Portfolios Table
+SQL> CREATE TABLE Portfolios (
+  2  	 PortfolioID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Name VARCHAR2(255) NOT NULL
+  5  );
+
+Table created.
+
+SQL> 
+SQL> -- Create PortfolioInstruments Table
+SQL> CREATE TABLE PortfolioInstruments (
+  2  	 PortfolioInstrumentID INT PRIMARY KEY,
+  3  	 PortfolioID INT REFERENCES Portfolios(PortfolioID),
+  4  	 InstrumentID INT REFERENCES Instruments(InstrumentID)
+  5  );
+
+Table created.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> -- Create AuditTrail Table
+SQL> CREATE TABLE AuditTrail (
+  2  	 AuditID INT PRIMARY KEY,
+  3  	 UserID INT REFERENCES Users(UserID),
+  4  	 Action VARCHAR2(500) NOT NULL,
+  5  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- Create MarketData Table
+SQL> CREATE TABLE MarketData (
+  2  	 DataID INT PRIMARY KEY,
+  3  	 InstrumentID INT REFERENCES Instruments(InstrumentID),
+  4  	 OpenPrice DECIMAL(10, 2),
+  5  	 ClosePrice DECIMAL(10, 2),
+  6  	 HighPrice DECIMAL(10, 2),
+  7  	 LowPrice DECIMAL(10, 2),
+  8  	 Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  9  );
+
+Table created.
+
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values.
+SQL> spool off

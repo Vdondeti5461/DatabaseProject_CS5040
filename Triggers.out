@@ -1,0 +1,204 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> -- triggers
+SQL> 
+SQL> --First trigger
+SQL> -- Ensure to create sequences before creating trigger, Need two sequences to test this trigger
+SQL> 
+SQL> CREATE SEQUENCE SessionID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+Sequence created.
+
+SQL> 
+SQL> CREATE SEQUENCE LogID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+Sequence created.
+
+SQL> 
+SQL> --Trigger LogUserLogin
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER LogUserLogin
+  2  AFTER INSERT ON UserSessions
+  3  FOR EACH ROW
+  4  BEGIN
+  5    INSERT INTO Logs (LogID, UserID, Action, Timestamp)
+  6    VALUES (LogID_SEQ.NEXTVAL, :NEW.UserID, 'User logged in', SYSDATE);
+  7  END;
+  8  /
+
+Trigger created.
+
+SQL> 
+SQL> 
+SQL> -- Second Trigger
+SQL> 
+SQL> -- creating a sequece
+SQL> 
+SQL> CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+Sequence created.
+
+SQL> 
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER UpdateAccountAfterDeposit
+  2  AFTER INSERT ON Deposits
+  3  FOR EACH ROW
+  4  DECLARE
+  5    v_Balance Accounts.Balance%TYPE;
+  6  BEGIN
+  7    -- Retrieve the current balance of the user
+  8    SELECT Balance INTO v_Balance
+  9    FROM Accounts
+ 10    WHERE UserID = (SELECT UserID FROM Wallets WHERE WalletID = :NEW.WalletID);
+ 11  
+ 12    -- Update the balance
+ 13    UPDATE Accounts
+ 14    SET Balance = v_Balance + :NEW.Amount
+ 15    WHERE UserID = (SELECT UserID FROM Wallets WHERE WalletID = :NEW.WalletID);
+ 16  EXCEPTION
+ 17    WHEN NO_DATA_FOUND THEN
+ 18  	 RAISE_APPLICATION_ERROR(-20001, 'Account not found for deposit.');
+ 19  END;
+ 20  /
+
+Trigger created.
+
+SQL> 
+SQL> -- then test the use case
+SQL> 
+SQL> 
+SQL> --  Third Trigger
+SQL> 
+SQL> -- Create a sequence
+SQL> 
+SQL> CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+Sequence created.
+
+SQL> 
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER VerifyBalanceBeforeWithdrawal
+  2  BEFORE INSERT ON Withdrawals
+  3  FOR EACH ROW
+  4  DECLARE
+  5    v_Balance NUMBER;
+  6    v_UserID NUMBER;
+  7  BEGIN
+  8    -- Retrieve UserID from WalletID
+  9  
+ 10    SELECT UserID INTO v_UserID FROM Wallets WHERE WalletID = :NEW.WalletID;
+ 11  
+ 12    -- Retrieve the current balance of the user
+ 13  
+ 14    SELECT Balance INTO v_Balance FROM Accounts WHERE UserID = v_UserID;
+ 15  
+ 16    IF v_Balance < :NEW.Amount THEN
+ 17  	 RAISE_APPLICATION_ERROR(-20002, 'Insufficient funds for withdrawal.');
+ 18    END IF;
+ 19  EXCEPTION
+ 20    WHEN NO_DATA_FOUND THEN
+ 21  	 RAISE_APPLICATION_ERROR(-20003, 'Account or wallet not found.');
+ 22  END;
+ 23  /
+
+Trigger created.
+
+SQL> 
+SQL> --Then test the trigger
+SQL> 
+SQL> --Fourth Trigger
+SQL> 
+SQL> --Create a sequence
+SQL> 
+SQL> CREATE SEQUENCE AuditID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+Sequence created.
+
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER AuditPasswordChange
+  2  AFTER UPDATE OF Password ON Users
+  3  FOR EACH ROW
+  4  BEGIN
+  5    INSERT INTO AuditTrail (AuditID, UserID, Action, Timestamp)
+  6    VALUES (AuditID_SEQ.NEXTVAL, :NEW.UserID, 'Password changed', SYSDATE);
+  7  END;
+  8  /
+
+Trigger created.
+
+SQL> 
+SQL> --Then Test the trigger
+SQL> 
+SQL> 
+SQL> --Fifth Trigger
+SQL> 
+SQL> --sequences already created ( we need logid sequence)
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER LogUserProfileUpdate
+  2  AFTER UPDATE ON UserProfiles
+  3  FOR EACH ROW
+  4  BEGIN
+  5    INSERT INTO Logs (LogID, UserID, Action, Timestamp)
+  6    VALUES (LogID_SEQ.NEXTVAL, :NEW.UserID, 'User profile updated', SYSDATE);
+  7  END;
+  8  /
+
+Trigger created.
+
+SQL> 
+SQL> --Then Test the trigger
+SQL> 
+SQL> --6th Trigger
+SQL> 
+SQL> --Create sequence
+SQL> 
+SQL> CREATE SEQUENCE NotificationID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE;
+
+Sequence created.
+
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER NotifyOrderStatusChange
+  2  AFTER UPDATE OF Status ON Orders
+  3  FOR EACH ROW
+  4  WHEN (OLD.Status != NEW.Status)
+  5  BEGIN
+  6    INSERT INTO Notifications (NotificationID, UserID, Message, Timestamp)
+  7    VALUES (NotificationID_SEQ.NEXTVAL, :NEW.UserID, 'Order ' || :NEW.OrderID || ' status changed to ' || :NEW.Status, SYSDATE);
+  8  END;
+  9  /
+
+Trigger created.
+
+SQL> 
+SQL> -- then test the use case
+SQL> 
+SQL> -- 7th Trigger
+SQL> 
+SQL> -- create sequence
+SQL> 
+SQL> CREATE SEQUENCE LogsID_SEQ START WITH 16 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> --Trigger
+SQL> 
+SQL> CREATE OR REPLACE TRIGGER trg_log_balance_update
+  2  AFTER UPDATE OF Balance ON Accounts
+  3  FOR EACH ROW
+  4  BEGIN
+  5  	 INSERT INTO Logs (LogID, UserID, Action, Timestamp)
+  6  	 VALUES (LogsID_SEQ.NEXTVAL, :NEW.UserID, 'Account balance updated', SYSDATE);
+  7  END;
+  8  /
+
+Trigger created.
+
+SQL> 
+SQL> -- Then test the use case statements
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

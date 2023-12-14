@@ -1,0 +1,178 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> -- Functions
+SQL> 
+SQL> 
+SQL> --Function 1
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION GetUserEmail(p_UserID IN Users.UserID%TYPE)
+  2  RETURN VARCHAR2 IS
+  3    v_Email Users.Email%TYPE;
+  4  BEGIN
+  5    SELECT Email INTO v_Email
+  6    FROM Users
+  7    WHERE UserID = p_UserID;
+  8  
+  9    RETURN v_Email;
+ 10  EXCEPTION
+ 11    WHEN NO_DATA_FOUND THEN
+ 12  	 RETURN 'No user found with the given UserID.';
+ 13    WHEN OTHERS THEN
+ 14  	 RETURN 'Error occurred: ' || SQLERRM;
+ 15  END;
+ 16  /
+
+Function created.
+
+SQL> 
+SQL> 
+SQL> --Function 2
+SQL> CREATE OR REPLACE FUNCTION GetUserBalance(p_UserID IN Accounts.UserID%TYPE)
+  2  RETURN NUMBER IS
+  3    v_Balance Accounts.Balance%TYPE;
+  4  BEGIN
+  5    SELECT Balance INTO v_Balance
+  6    FROM Accounts
+  7    WHERE UserID = p_UserID;
+  8  
+  9    RETURN v_Balance;
+ 10  EXCEPTION
+ 11    WHEN NO_DATA_FOUND THEN
+ 12  	 RAISE_APPLICATION_ERROR(-20001, 'No account found for the given UserID.');
+ 13    WHEN OTHERS THEN
+ 14  	 RAISE_APPLICATION_ERROR(-20002, 'Error occurred: ' || SQLERRM);
+ 15  END;
+ 16  /
+
+Function created.
+
+SQL> 
+SQL> 
+SQL> --function 3
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION CountUserOrders(p_UserID IN Orders.UserID%TYPE)
+  2  RETURN NUMBER IS
+  3    v_OrderCount NUMBER;
+  4  BEGIN
+  5    SELECT COUNT(*)
+  6    INTO v_OrderCount
+  7    FROM Orders
+  8    WHERE UserID = p_UserID;
+  9  
+ 10    RETURN v_OrderCount;
+ 11  EXCEPTION
+ 12    WHEN NO_DATA_FOUND THEN
+ 13  	 RETURN 0; -- Assuming no orders means count is 0
+ 14    WHEN OTHERS THEN
+ 15  	 RAISE_APPLICATION_ERROR(-20006, 'Error occurred: ' || SQLERRM);
+ 16  END;
+ 17  /
+
+Function created.
+
+SQL> 
+SQL> 
+SQL> --function 4
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION GetInstrumentType(p_InstrumentID IN Instruments.InstrumentID%TYPE)
+  2  RETURN VARCHAR2 IS
+  3    v_Type Instruments.Type%TYPE;
+  4  BEGIN
+  5    SELECT Type INTO v_Type
+  6    FROM Instruments
+  7    WHERE InstrumentID = p_InstrumentID;
+  8  
+  9    RETURN v_Type;
+ 10  EXCEPTION
+ 11    WHEN NO_DATA_FOUND THEN
+ 12  	 RAISE_APPLICATION_ERROR(-20009, 'Instrument not found.');
+ 13    WHEN OTHERS THEN
+ 14  	 RAISE_APPLICATION_ERROR(-20010, 'Error occurred: ' || SQLERRM);
+ 15  END;
+ 16  /
+
+Function created.
+
+SQL> 
+SQL> --Function f5
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION GetTotalDeposits(p_UserID IN Users.UserID%TYPE)
+  2  RETURN DECIMAL IS
+  3    v_TotalDeposits DECIMAL(10, 2) := 0;
+  4  BEGIN
+  5    SELECT SUM(d.Amount)
+  6    INTO v_TotalDeposits
+  7    FROM Deposits d
+  8    INNER JOIN Wallets w ON d.WalletID = w.WalletID
+  9    WHERE w.UserID = p_UserID;
+ 10  
+ 11    RETURN NVL(v_TotalDeposits, 0);
+ 12  EXCEPTION
+ 13    WHEN NO_DATA_FOUND THEN
+ 14  	 RETURN 0; -- Assuming no deposits means total is 0
+ 15    WHEN OTHERS THEN
+ 16  	 RAISE_APPLICATION_ERROR(-20014, 'Error occurred: ' || SQLERRM);
+ 17  END;
+ 18  /
+
+Function created.
+
+SQL> 
+SQL> 
+SQL> -- Function 6
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION CalculateTotalPortfolioValue_V3(p_UserID IN Users.UserID%TYPE)
+  2  RETURN DECIMAL IS
+  3    v_TotalValue DECIMAL(10, 2) := 0;
+  4  BEGIN
+  5    SELECT SUM(md.ClosePrice)
+  6    INTO v_TotalValue
+  7    FROM PortfolioInstruments pi
+  8    JOIN Instruments ins ON pi.InstrumentID = ins.InstrumentID
+  9    JOIN MarketData md ON ins.InstrumentID = md.InstrumentID
+ 10    WHERE pi.PortfolioID IN (SELECT PortfolioID FROM Portfolios WHERE UserID = p_UserID);
+ 11  
+ 12    RETURN NVL(v_TotalValue, 0);
+ 13  EXCEPTION
+ 14    WHEN NO_DATA_FOUND THEN
+ 15  	 RETURN 0; -- Return 0 if no portfolio data is found
+ 16    WHEN OTHERS THEN
+ 17  	 RAISE_APPLICATION_ERROR(-20025, 'Error occurred: ' || SQLERRM);
+ 18  END;
+ 19  /
+
+Function created.
+
+SQL> 
+SQL> 
+SQL> --Function 7
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION GetUserRecentTransaction(p_UserID IN Users.UserID%TYPE)
+  2  RETURN VARCHAR2 IS
+  3    v_TransactionDetails VARCHAR2(4000);
+  4  BEGIN
+  5    SELECT 'TransactionID: ' || TransactionID || ', OrderID: ' || OrderID || ', Timestamp: ' || Timestamp
+  6    INTO v_TransactionDetails
+  7    FROM Transactions
+  8    WHERE OrderID IN (SELECT OrderID FROM Orders WHERE UserID = p_UserID)
+  9    ORDER BY Timestamp DESC
+ 10    FETCH FIRST 1 ROW ONLY;
+ 11  
+ 12    RETURN v_TransactionDetails;
+ 13  EXCEPTION
+ 14    WHEN NO_DATA_FOUND THEN
+ 15  	 RETURN 'No transactions found for the user.';
+ 16    WHEN OTHERS THEN
+ 17  	 RAISE_APPLICATION_ERROR(-20026, 'Error occurred: ' || SQLERRM);
+ 18  END;
+ 19  /
+
+Function created.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

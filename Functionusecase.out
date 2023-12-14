@@ -1,0 +1,249 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> --Function use case
+SQL> 
+SQL> --testing the first function
+SQL> 
+SQL> --Testing with valid usedid / Invalid UserId
+SQL> 
+SQL> SELECT GetUserEmail(1) FROM dual;
+
+GETUSEREMAIL(1)                                                                 
+--------------------------------------------------------------------------------
+user1@example.com                                                               
+
+SQL> 
+SQL> -- Assuming 999 does not exist
+SQL> 
+SQL> SELECT GetUserEmail(999) FROM dual;
+
+GETUSEREMAIL(999)                                                               
+--------------------------------------------------------------------------------
+No user found with the given UserID.                                            
+
+SQL> 
+SQL> 
+SQL> --second function
+SQL> 
+SQL> --Testing to check userbalance / Not available
+SQL> 
+SQL> SELECT GetUserBalance(1) FROM dual;
+
+GETUSERBALANCE(1)                                                               
+-----------------                                                               
+            10000                                                               
+
+SQL> SELECT GetUserBalance(999) FROM dual;
+SELECT GetUserBalance(999) FROM dual
+       *
+ERROR at line 1:
+ORA-20001: No account found for the given UserID. 
+ORA-06512: at "VDONDETI.GETUSERBALANCE", line 12 
+
+
+SQL> 
+SQL> 
+SQL> --Third Function
+SQL> 
+SQL> --Testing to count orders
+SQL> 
+SQL> SELECT CountUserOrders(1) FROM dual;
+
+COUNTUSERORDERS(1)                                                              
+------------------                                                              
+                 1                                                              
+
+SQL> SELECT CountUserOrders(999) FROM dual;
+
+COUNTUSERORDERS(999)                                                            
+--------------------                                                            
+                   0                                                            
+
+SQL> 
+SQL> --Fourth Function
+SQL> 
+SQL> SELECT GetInstrumentType(1) FROM dual;
+
+GETINSTRUMENTTYPE(1)                                                            
+--------------------------------------------------------------------------------
+Stock                                                                           
+
+SQL> SELECT GetInstrumentType(999) FROM dual;
+SELECT GetInstrumentType(999) FROM dual
+       *
+ERROR at line 1:
+ORA-20009: Instrument not found. 
+ORA-06512: at "VDONDETI.GETINSTRUMENTTYPE", line 12 
+
+
+SQL> 
+SQL> --Fifth Function
+SQL> 
+SQL> SELECT GetTotalDeposits(1) FROM dual;
+
+GETTOTALDEPOSITS(1)                                                             
+-------------------                                                             
+               1000                                                             
+
+SQL> SELECT GetTotalDeposits(999) FROM dual;
+
+GETTOTALDEPOSITS(999)                                                           
+---------------------                                                           
+                    0                                                           
+
+SQL> 
+SQL> --Sixth Function
+SQL> 
+SQL> SELECT CalculateTotalPortfolioValue_V3(1) FROM dual;
+
+CALCULATETOTALPORTFOLIOVALUE_V3(1)                                              
+----------------------------------                                              
+                               480                                              
+
+SQL> SELECT CalculateTotalPortfolioValue_V3(999) FROM dual;
+
+CALCULATETOTALPORTFOLIOVALUE_V3(999)                                            
+------------------------------------                                            
+                                   0                                            
+
+SQL> 
+SQL> -- Seventh Function
+SQL> 
+SQL> SELECT GetUserRecentTransaction(1) FROM dual;
+
+GETUSERRECENTTRANSACTION(1)                                                     
+--------------------------------------------------------------------------------
+TransactionID: 1, OrderID: 1, Timestamp: 13-DEC-23 06.44.57.000000 PM           
+
+SQL> SELECT GetUserRecentTransaction(999) FROM dual;
+
+GETUSERRECENTTRANSACTION(999)                                                   
+--------------------------------------------------------------------------------
+No transactions found for the user.                                             
+
+SQL> 
+SQL> -- testing another way
+SQL> 
+SQL> INSERT INTO Users (UserID, Username, Password, Email, CreatedAt, UpdatedAt) VALUES (1, 'TestUser', 'TestPass', 'testuser@example.com', SYSDATE, SYSDATE);
+INSERT INTO Users (UserID, Username, Password, Email, CreatedAt, UpdatedAt) VALUES (1, 'TestUser', 'TestPass', 'testuser@example.com', SYSDATE, SYSDATE)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VDONDETI.SYS_C0069511) violated 
+
+
+SQL> 
+SQL> -- Inserting multiple orders to user1
+SQL> 
+SQL> -- Inserting first order
+SQL> 
+SQL> INSERT INTO Orders (OrderID, UserID, InstrumentID, Type, Status, CreatedAt, UpdatedAt) VALUES (111, 1, 1, 'Buy', 'Open', SYSDATE - 7, SYSDATE - 7);
+
+1 row created.
+
+SQL> 
+SQL> -- Inserting second order
+SQL> 
+SQL> INSERT INTO Orders (OrderID, UserID, InstrumentID, Type, Status, CreatedAt, UpdatedAt) VALUES (102, 1, 2, 'Sell', 'Closed', SYSDATE - 5, SYSDATE - 4);
+
+1 row created.
+
+SQL> 
+SQL> -- Inserting third order (most recent)
+SQL> 
+SQL> INSERT INTO Orders (OrderID, UserID, InstrumentID, Type, Status, CreatedAt, UpdatedAt) VALUES (103, 1, 3, 'Buy', 'Executed', SYSDATE - 1, SYSDATE);
+
+1 row created.
+
+SQL> 
+SQL> -- Inserting transactions to orders
+SQL> 
+SQL> -- Inserting a transaction for the first order
+SQL> 
+SQL> INSERT INTO Transactions (TransactionID, OrderID, Timestamp) VALUES (201, 101, SYSDATE - 7); -- Assuming TransactionID starts at 201
+  2  
+SQL> -- Inserting a transaction for the second order
+SQL> 
+SQL> INSERT INTO Transactions (TransactionID, OrderID, Timestamp) VALUES (202, 102, SYSDATE - 5);
+
+1 row created.
+
+SQL> 
+SQL> -- Inserting a transaction for the third (most recent) order]
+SQL> 
+SQL> INSERT INTO Transactions (TransactionID, OrderID, Timestamp) VALUES (203, 103, SYSDATE - 1);
+
+1 row created.
+
+SQL> 
+SQL> -- Getting recent transactions
+SQL> 
+SQL> SELECT t.TransactionID, t.OrderID, t.Timestamp, o.UserID, o.Type, o.Status
+  2  FROM Transactions t
+  3  JOIN Orders o ON t.OrderID = o.OrderID
+  4  WHERE o.UserID = 1
+  5  ORDER BY t.Timestamp DESC;
+
+TRANSACTIONID    ORDERID                                                        
+------------- ----------                                                        
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+    USERID TYPE                                                                 
+---------- --------------------------------------------------                   
+STATUS                                                                          
+--------------------------------------------------                              
+            1          1                                                        
+13-DEC-23 06.44.57.000000 PM                                                    
+         1 Buy                                                                  
+Open                                                                            
+                                                                                
+
+TRANSACTIONID    ORDERID                                                        
+------------- ----------                                                        
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+    USERID TYPE                                                                 
+---------- --------------------------------------------------                   
+STATUS                                                                          
+--------------------------------------------------                              
+          203        103                                                        
+12-DEC-23 06.46.23.000000 PM                                                    
+         1 Buy                                                                  
+Executed                                                                        
+                                                                                
+
+TRANSACTIONID    ORDERID                                                        
+------------- ----------                                                        
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+    USERID TYPE                                                                 
+---------- --------------------------------------------------                   
+STATUS                                                                          
+--------------------------------------------------                              
+          202        102                                                        
+08-DEC-23 06.46.23.000000 PM                                                    
+         1 Sell                                                                 
+Closed                                                                          
+                                                                                
+
+SQL> 
+SQL> SELECT GetUserRecentTransaction(1) FROM dual;
+
+GETUSERRECENTTRANSACTION(1)                                                     
+--------------------------------------------------------------------------------
+TransactionID: 1, OrderID: 1, Timestamp: 13-DEC-23 06.44.57.000000 PM           
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

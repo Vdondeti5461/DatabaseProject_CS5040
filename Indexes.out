@@ -1,0 +1,30 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> --First Index
+SQL> 
+SQL> CREATE INDEX idx_transactions_timestamp ON Transactions (Timestamp);
+
+Index created.
+
+SQL> 
+SQL> --second Index
+SQL> 
+SQL> CREATE INDEX idx_transactions_orderid ON Transactions (OrderID);
+
+Index created.
+
+SQL> 
+SQL> --Third Index
+SQL> 
+SQL> CREATE INDEX idx_orders_userid ON Orders (UserID);
+
+Index created.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

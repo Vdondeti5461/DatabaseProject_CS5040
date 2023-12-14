@@ -1,0 +1,224 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> --Sequences for Procedures
+SQL> -- First Procedure AddNew User
+SQL> 
+SQL> CREATE SEQUENCE UserID_SEQ START WITH 16 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE AddNewUser(
+  2  	 p_Username IN Users.Username%TYPE,
+  3  	 p_Password IN Users.Password%TYPE,
+  4  	 p_Email IN Users.Email%TYPE)
+  5  IS
+  6  	 v_UsernameCount INT;
+  7  	 v_EmailCount INT;
+  8  BEGIN
+  9  	 -- Check if the username already exists
+ 10  	 SELECT COUNT(*)
+ 11  	 INTO v_UsernameCount
+ 12  	 FROM Users
+ 13  	 WHERE Username = p_Username;
+ 14  
+ 15  	 IF v_UsernameCount > 0 THEN
+ 16  	     RAISE_APPLICATION_ERROR(-20001, 'Username already exists.');
+ 17  	 END IF;
+ 18  
+ 19  	 -- Check if the email already exists
+ 20  	 SELECT COUNT(*)
+ 21  	 INTO v_EmailCount
+ 22  	 FROM Users
+ 23  	 WHERE Email = p_Email;
+ 24  
+ 25  	 IF v_EmailCount > 0 THEN
+ 26  	     RAISE_APPLICATION_ERROR(-20002, 'Email already exists.');
+ 27  	 END IF;
+ 28  
+ 29  	 -- Insert the new user
+ 30  	 INSERT INTO Users (UserID, Username, Password, Email, CreatedAt, UpdatedAt)
+ 31  	 VALUES (UserID_SEQ.NEXTVAL, p_Username, p_Password, p_Email, SYSDATE, SYSDATE);
+ 32  
+ 33  EXCEPTION
+ 34  	 WHEN OTHERS THEN
+ 35  	     RAISE_APPLICATION_ERROR(-20003, 'Error adding new user: ' || SQLERRM);
+ 36  END;
+ 37  /
+
+Procedure created.
+
+SQL> 
+SQL> 
+SQL> -- Second Procedure UpdateUserProfile
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE UpdateUserProfile(
+  2  	 p_UserID IN UserProfiles.UserID%TYPE,
+  3  	 p_FirstName IN UserProfiles.FirstName%TYPE,
+  4  	 p_LastName IN UserProfiles.LastName%TYPE,
+  5  	 p_DOB IN UserProfiles.DOB%TYPE,
+  6  	 p_Country IN UserProfiles.Country%TYPE)
+  7  IS
+  8  BEGIN
+  9  	 UPDATE UserProfiles
+ 10  	 SET FirstName = p_FirstName,
+ 11  	     LastName = p_LastName,
+ 12  	     DOB = p_DOB,
+ 13  	     Country = p_Country
+ 14  	 WHERE UserID = p_UserID;
+ 15  EXCEPTION
+ 16  	 WHEN NO_DATA_FOUND THEN
+ 17  	     RAISE_APPLICATION_ERROR(-20002, 'User profile not found.');
+ 18  	 WHEN OTHERS THEN
+ 19  	     RAISE_APPLICATION_ERROR(-20003, 'Error occurred: ' || SQLERRM);
+ 20  END;
+ 21  /
+
+Procedure created.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> --Third Procedure ChangeUserPassword
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE ChangeUserPassword(
+  2  	 p_UserID IN Users.UserID%TYPE,
+  3  	 p_NewPassword IN Users.Password%TYPE)
+  4  IS
+  5  BEGIN
+  6    UPDATE Users
+  7    SET Password = p_NewPassword
+  8    WHERE UserID = p_UserID;
+  9  
+ 10    IF SQL%ROWCOUNT = 0 THEN
+ 11  	 RAISE_APPLICATION_ERROR(-20022, 'User not found.');
+ 12    END IF;
+ 13  EXCEPTION
+ 14    WHEN OTHERS THEN
+ 15  	 RAISE_APPLICATION_ERROR(-20023, 'Error occurred: ' || SQLERRM);
+ 16  END;
+ 17  /
+
+Procedure created.
+
+SQL> 
+SQL> 
+SQL> --procedure 4
+SQL> 
+SQL> --sequence
+SQL> 
+SQL> CREATE SEQUENCE seq_WithdrawalID
+  2  START WITH 16
+  3  INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> --procedure
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE ProcessWithdrawal(
+  2  	 p_UserID IN Accounts.UserID%TYPE,
+  3  	 p_Amount IN NUMBER)
+  4  IS
+  5    v_Balance NUMBER;
+  6  BEGIN
+  7    SELECT Balance INTO v_Balance
+  8    FROM Accounts
+  9    WHERE UserID = p_UserID;
+ 10  
+ 11    IF v_Balance < p_Amount THEN
+ 12  	 RAISE_APPLICATION_ERROR(-20011, 'Insufficient funds.');
+ 13    END IF;
+ 14  
+ 15    UPDATE Accounts
+ 16    SET Balance = Balance - p_Amount
+ 17    WHERE UserID = p_UserID;
+ 18  
+ 19    INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
+ 20    VALUES (seq_WithdrawalID.NEXTVAL, p_UserID, p_Amount, SYSDATE);
+ 21  
+ 22  EXCEPTION
+ 23    WHEN NO_DATA_FOUND THEN
+ 24  	 RAISE_APPLICATION_ERROR(-20012, 'Account not found.');
+ 25    WHEN OTHERS THEN
+ 26  	 RAISE_APPLICATION_ERROR(-20013, 'Error occurred: ' || SQLERRM);
+ 27  END;
+ 28  /
+
+Procedure created.
+
+SQL> 
+SQL> --Fifth Procedure
+SQL> 
+SQL> CREATE SEQUENCE seq_DepositID START WITH 16 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> -- will start the sequence by next deposit
+SQL> 
+SQL> --procedure
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE RecordDeposit(
+  2  	 p_UserID IN Users.UserID%TYPE,
+  3  	 p_Amount IN DECIMAL)
+  4  IS
+  5    v_WalletID Wallets.WalletID%TYPE;
+  6  BEGIN
+  7    -- Retrieve the WalletID for the given UserID
+  8    SELECT WalletID INTO v_WalletID
+  9    FROM Wallets
+ 10    WHERE UserID = p_UserID;
+ 11  
+ 12    -- Insert the deposit into the Deposits table
+ 13    INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
+ 14    VALUES (seq_DepositID.NEXTVAL, v_WalletID, p_Amount, SYSDATE);
+ 15  
+ 16  EXCEPTION
+ 17    WHEN NO_DATA_FOUND THEN
+ 18  	 RAISE_APPLICATION_ERROR(-20018, 'User wallet not found.');
+ 19    WHEN OTHERS THEN
+ 20  	 RAISE_APPLICATION_ERROR(-20019, 'Error occurred: ' || SQLERRM);
+ 21  END;
+ 22  /
+
+Procedure created.
+
+SQL> 
+SQL> 
+SQL> --sixth Procedure
+SQL> 
+SQL> --create sequence
+SQL> 
+SQL> 	 CREATE SEQUENCE seq_SessionID START WITH 16 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> --procedure
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE RecordUserLogin(
+  2  	 p_UserID IN Users.UserID%TYPE,
+  3  	 p_LoginTime IN TIMESTAMP)
+  4  IS
+  5  BEGIN
+  6    INSERT INTO UserSessions (SessionID, UserID, Token, ExpiresAt)
+  7    VALUES (seq_SessionID.NEXTVAL, p_UserID, 'GeneratedToken', p_LoginTime + INTERVAL '7' DAY); -- Assuming token generation logic and 7 days validity
+  8  
+  9  EXCEPTION
+ 10    WHEN NO_DATA_FOUND THEN
+ 11  	 RAISE_APPLICATION_ERROR(-20007, 'User not found.');
+ 12    WHEN OTHERS THEN
+ 13  	 RAISE_APPLICATION_ERROR(-20008, 'Error occurred: ' || SQLERRM);
+ 14  END;
+ 15  /
+
+Procedure created.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

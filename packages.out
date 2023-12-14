@@ -1,0 +1,193 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> --Package Specification
+SQL> 
+SQL> CREATE OR REPLACE PACKAGE UserManagement AS
+  2  
+  3  	 PROCEDURE AddNewUser(
+  4  	     p_Username IN Users.Username%TYPE,
+  5  	     p_Password IN Users.Password%TYPE,
+  6  	     p_Email IN Users.Email%TYPE);
+  7  
+  8  	 PROCEDURE UpdateUserProfile(
+  9  	     p_UserID IN UserProfiles.UserID%TYPE,
+ 10  	     p_FirstName IN UserProfiles.FirstName%TYPE,
+ 11  	     p_LastName IN UserProfiles.LastName%TYPE,
+ 12  	     p_DOB IN UserProfiles.DOB%TYPE,
+ 13  	     p_Country IN UserProfiles.Country%TYPE);
+ 14  
+ 15  	 PROCEDURE ChangeUserPassword(
+ 16  	     p_UserID IN Users.UserID%TYPE,
+ 17  	     p_NewPassword IN Users.Password%TYPE);
+ 18  
+ 19  	 FUNCTION GetUserEmail(p_UserID IN Users.UserID%TYPE) RETURN VARCHAR2;
+ 20  
+ 21  END UserManagement;
+ 22  /
+
+Package created.
+
+SQL> 
+SQL> --Package Body
+SQL> 
+SQL> CREATE OR REPLACE PACKAGE BODY UserManagement AS
+  2  
+  3  	 PROCEDURE AddNewUser(
+  4  	     p_Username IN Users.Username%TYPE,
+  5  	     p_Password IN Users.Password%TYPE,
+  6  	     p_Email IN Users.Email%TYPE) IS
+  7  	     v_UsernameCount INT;
+  8  	     v_EmailCount INT;
+  9  	 BEGIN
+ 10  	     SELECT COUNT(*)
+ 11  	     INTO v_UsernameCount
+ 12  	     FROM Users
+ 13  	     WHERE Username = p_Username;
+ 14  
+ 15  	     IF v_UsernameCount > 0 THEN
+ 16  		 DBMS_OUTPUT.PUT_LINE('Username already exists: ' || p_Username);
+ 17  		 RAISE_APPLICATION_ERROR(-20001, 'Username already exists.');
+ 18  	     END IF;
+ 19  
+ 20  	     SELECT COUNT(*)
+ 21  	     INTO v_EmailCount
+ 22  	     FROM Users
+ 23  	     WHERE Email = p_Email;
+ 24  
+ 25  	     IF v_EmailCount > 0 THEN
+ 26  		 DBMS_OUTPUT.PUT_LINE('Email already exists: ' || p_Email);
+ 27  		 RAISE_APPLICATION_ERROR(-20002, 'Email already exists.');
+ 28  	     END IF;
+ 29  
+ 30  	     INSERT INTO Users (UserID, Username, Password, Email, CreatedAt, UpdatedAt)
+ 31  	     VALUES (UserID_SEQ.NEXTVAL, p_Username, p_Password, p_Email, SYSDATE, SYSDATE);
+ 32  	 END AddNewUser;
+ 33  
+ 34  	 PROCEDURE UpdateUserProfile(
+ 35  	     p_UserID IN UserProfiles.UserID%TYPE,
+ 36  	     p_FirstName IN UserProfiles.FirstName%TYPE,
+ 37  	     p_LastName IN UserProfiles.LastName%TYPE,
+ 38  	     p_DOB IN UserProfiles.DOB%TYPE,
+ 39  	     p_Country IN UserProfiles.Country%TYPE) IS
+ 40  	 BEGIN
+ 41  	     UPDATE UserProfiles
+ 42  	     SET FirstName = p_FirstName,
+ 43  		 LastName = p_LastName,
+ 44  		 DOB = p_DOB,
+ 45  		 Country = p_Country
+ 46  	     WHERE UserID = p_UserID;
+ 47  	 END UpdateUserProfile;
+ 48  
+ 49  	 PROCEDURE ChangeUserPassword(
+ 50  	     p_UserID IN Users.UserID%TYPE,
+ 51  	     p_NewPassword IN Users.Password%TYPE) IS
+ 52  	 BEGIN
+ 53  	     UPDATE Users
+ 54  	     SET Password = p_NewPassword
+ 55  	     WHERE UserID = p_UserID;
+ 56  	 END ChangeUserPassword;
+ 57  
+ 58  	 FUNCTION GetUserEmail(p_UserID IN Users.UserID%TYPE) RETURN VARCHAR2 IS
+ 59  	     v_Email Users.Email%TYPE;
+ 60  	 BEGIN
+ 61  	     SELECT Email INTO v_Email
+ 62  	     FROM Users
+ 63  	     WHERE UserID = p_UserID;
+ 64  	     RETURN v_Email;
+ 65  	 EXCEPTION
+ 66  	     WHEN NO_DATA_FOUND THEN
+ 67  		 RETURN NULL;
+ 68  	 END GetUserEmail;
+ 69  
+ 70  END UserManagement;
+ 71  /
+
+Package body created.
+
+SQL> 
+SQL> 
+SQL> --second package
+SQL> 
+SQL> --package specification
+SQL> 
+SQL> CREATE OR REPLACE PACKAGE FinancialOperations AS
+  2  
+  3  	 PROCEDURE ProcessWithdrawal(
+  4  	     p_UserID IN Accounts.UserID%TYPE,
+  5  	     p_Amount IN NUMBER);
+  6  
+  7  	 PROCEDURE RecordDeposit(
+  8  	     p_UserID IN Users.UserID%TYPE,
+  9  	     p_Amount IN DECIMAL);
+ 10  
+ 11  END FinancialOperations;
+ 12  /
+
+Package created.
+
+SQL> 
+SQL> --package body
+SQL> 
+SQL> CREATE OR REPLACE PACKAGE BODY FinancialOperations AS
+  2  
+  3  	 PROCEDURE ProcessWithdrawal(
+  4  	     p_UserID IN Accounts.UserID%TYPE,
+  5  	     p_Amount IN NUMBER) IS
+  6  	     v_Balance NUMBER;
+  7  	 BEGIN
+  8  	     SELECT Balance INTO v_Balance
+  9  	     FROM Accounts
+ 10  	     WHERE UserID = p_UserID;
+ 11  
+ 12  	     IF v_Balance < p_Amount THEN
+ 13  		 RAISE_APPLICATION_ERROR(-20011, 'Insufficient funds.');
+ 14  	     END IF;
+ 15  
+ 16  	     UPDATE Accounts
+ 17  	     SET Balance = Balance - p_Amount
+ 18  	     WHERE UserID = p_UserID;
+ 19  
+ 20  	     INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
+ 21  	     VALUES (WithdrawalID_SEQ.NEXTVAL, p_UserID, p_Amount, SYSDATE);
+ 22  	 END ProcessWithdrawal;
+ 23  
+ 24  	 PROCEDURE RecordDeposit(
+ 25  	     p_UserID IN Users.UserID%TYPE,
+ 26  	     p_Amount IN DECIMAL) IS
+ 27  	     v_WalletID Wallets.WalletID%TYPE;
+ 28  	 BEGIN
+ 29  	     SELECT WalletID INTO v_WalletID
+ 30  	     FROM Wallets
+ 31  	     WHERE UserID = p_UserID;
+ 32  
+ 33  	     INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
+ 34  	     VALUES (DepositID_SEQ.NEXTVAL, v_WalletID, p_Amount, SYSDATE);
+ 35  	 END RecordDeposit;
+ 36  
+ 37  END FinancialOperations;
+ 38  /
+
+Package body created.
+
+SQL> 
+SQL> -- create sequences required if necessary facing error
+SQL> 
+SQL> CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1;
+CREATE SEQUENCE WithdrawalID_SEQ START WITH 16 INCREMENT BY 1
+                *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1;
+CREATE SEQUENCE DepositID_SEQ START WITH 16 INCREMENT BY 1
+                *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

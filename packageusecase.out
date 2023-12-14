@@ -1,0 +1,88 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> --create sequence CREATE SEQUENCE UserID_SEQ START WITH 16 INCREMENT BY 1 NOMAXVALUE; create sequence if not available
+SQL> 
+SQL> --first test case AddNewUser
+SQL> 
+SQL> BEGIN
+  2  	 UserManagement.AddNewUser('uniqueUsernameTest', 'passwordTest', 'uniqueEmailTest@example.com');
+  3  END;
+  4  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> 
+SQL> --second Updateuserprofile
+SQL> 
+SQL> BEGIN
+  2  	 UserManagement.UpdateUserProfile(1, 'FirstName', 'LastName', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'Country');
+  3  END;
+  4  /
+BEGIN
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VDONDETI.SYS_C0069606) violated 
+ORA-06512: at "VDONDETI.LOGUSERPROFILEUPDATE", line 2 
+ORA-04088: error during execution of trigger 'VDONDETI.LOGUSERPROFILEUPDATE' 
+ORA-06512: at "VDONDETI.USERMANAGEMENT", line 41 
+ORA-06512: at line 2 
+
+
+SQL> 
+SQL> --third changeuserpassword
+SQL> 
+SQL> BEGIN
+  2  	 UserManagement.ChangeUserPassword(1, 'newPassword');
+  3  END;
+  4  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> --Fourth GetUseremail
+SQL> 
+SQL> DECLARE
+  2  	 v_Email VARCHAR2(255);
+  3  BEGIN
+  4  	 v_Email := UserManagement.GetUserEmail(1); -- Use a valid UserID
+  5  	 DBMS_OUTPUT.PUT_LINE('Email: ' || v_Email);
+  6  END;
+  7  /
+Email: user1@example.com                                                        
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> --Second package Testing use cases
+SQL> 
+SQL> 	 --create sequence as mentioned in package file
+SQL> 
+SQL> --Usecase ProcessWithdrawal:
+SQL> 
+SQL> BEGIN
+  2  	 FinancialOperations.ProcessWithdrawal(1, 500);
+  3  END;
+  4  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> --Usecase RecordDeposit:
+SQL> 
+SQL> BEGIN
+  2  	 FinancialOperations.RecordDeposit(1, 10000);
+  3  END;
+  4  /
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

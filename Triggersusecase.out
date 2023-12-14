@@ -1,0 +1,243 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> --first trigger Test case
+SQL> 
+SQL> -- Insert a mock session
+SQL> INSERT INTO UserSessions (SessionID, UserID, Token, ExpiresAt)
+  2  VALUES (SessionID_SEQ.NEXTVAL, 4, 'VAMSI123', SYSDATE + 7);
+INSERT INTO UserSessions (SessionID, UserID, Token, ExpiresAt)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VDONDETI.SYS_C0069554) violated 
+
+
+SQL> 
+SQL> -- Query the Logs table to verify the trigger action
+SQL> SELECT * FROM Logs WHERE UserID = 4;
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+         4          4                                                           
+Logged out                                                                      
+13-DEC-23 06.44.58.000000 PM                                                    
+                                                                                
+
+SQL> 
+SQL> 
+SQL> --second trigger use case
+SQL> 
+SQL> -- Insert a mock deposit (replace the WalletID and UserID with actual values from your database)
+SQL> INSERT INTO Deposits (DepositID, WalletID, Amount, Timestamp)
+  2  VALUES (DepositID_SEQ.NEXTVAL, 2, 10000.00, SYSDATE);
+
+1 row created.
+
+SQL> 
+SQL> -- Query the Accounts table to verify the trigger action (replace the UserID with the actual UserID linked to the WalletID used above)
+SQL> SELECT * FROM Accounts WHERE UserID =2;
+
+ ACCOUNTID     USERID    BALANCE CUR                                            
+---------- ---------- ---------- ---                                            
+         2          2      52000 CAD                                            
+
+SQL> 
+SQL> 
+SQL> --Third Trigger use case
+SQL> 
+SQL> -- Attempt a mock withdrawal (replace the WalletID with an actual value from your database and set an Amount greater than the account balance)
+SQL> INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
+  2  VALUES (WithdrawalID_SEQ.NEXTVAL, 4, 20000, SYSDATE);
+INSERT INTO Withdrawals (WithdrawalID, WalletID, Amount, Timestamp)
+*
+ERROR at line 1:
+ORA-20002: Insufficient funds for withdrawal. 
+ORA-06512: at "VDONDETI.VERIFYBALANCEBEFOREWITHDRAWAL", line 14 
+ORA-04088: error during execution of trigger 
+'VDONDETI.VERIFYBALANCEBEFOREWITHDRAWAL' 
+
+
+SQL> 
+SQL> --if withdrawl amount greated than balance it will throw error as insufficient funds
+SQL> 
+SQL> --Fourth Trigger use case
+SQL> 
+SQL> -- Update a user's password (replace UserID and Password with appropriate values)
+SQL> UPDATE Users
+  2  SET Password = 'Rankkik'
+  3  WHERE UserID = 2;
+
+1 row updated.
+
+SQL> 
+SQL> --after update check user table for password change for userid
+SQL> 
+SQL> --Fifth Tigger Use case
+SQL> 
+SQL> -- Update a user's profile (replace ProfileID with an actual value)
+SQL> UPDATE UserProfiles
+  2  SET FirstName = 'Ram', LastName = 'kira'
+  3  WHERE ProfileID = 5;
+UPDATE UserProfiles
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VDONDETI.SYS_C0069606) violated 
+ORA-06512: at "VDONDETI.LOGUSERPROFILEUPDATE", line 2 
+ORA-04088: error during execution of trigger 'VDONDETI.LOGUSERPROFILEUPDATE' 
+
+
+SQL> 
+SQL> -- Query the Logs table to verify the trigger action
+SQL> SELECT * FROM Logs WHERE UserID = 5 AND Action = 'User profile updated';
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+        18          5                                                           
+User profile updated                                                            
+13-DEC-23 06.58.05.000000 PM                                                    
+                                                                                
+
+SQL> 
+SQL> --sixth trigger use case
+SQL> 
+SQL> -- Update an order's status (replace OrderID with an actual value and set a new status)
+SQL> UPDATE Orders
+  2  SET Status = 'Executed'
+  3  WHERE OrderID = 6;
+UPDATE Orders
+*
+ERROR at line 1:
+ORA-00001: unique constraint (VDONDETI.SYS_C0069602) violated 
+ORA-06512: at "VDONDETI.NOTIFYORDERSTATUSCHANGE", line 2 
+ORA-04088: error during execution of trigger 'VDONDETI.NOTIFYORDERSTATUSCHANGE' 
+
+
+SQL> 
+SQL> -- Query the Notifications table to verify the trigger action
+SQL> SELECT * FROM Notifications WHERE UserID = 6;
+
+NOTIFICATIONID     USERID                                                       
+-------------- ----------                                                       
+MESSAGE                                                                         
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+            21          6                                                       
+Security update: Please change your password                                    
+13-DEC-23 06.44.58.000000 PM                                                    
+                                                                                
+
+SQL> 
+SQL> 
+SQL> -- Query the AuditTrail table to verify the trigger action
+SQL> SELECT * FROM AuditTrail WHERE UserID = 6;
+
+   AUDITID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+         6          6                                                           
+Login                                                                           
+13-DEC-23 06.44.58.000000 PM                                                    
+                                                                                
+
+SQL> 
+SQL> --Seventh Trigger Use case
+SQL> 
+SQL> --Update account
+SQL> 
+SQL> UPDATE Accounts
+  2  SET Balance = Balance + 100
+  3  WHERE AccountID = 5;
+
+1 row updated.
+
+SQL> 
+SQL> --check logs table
+SQL> 
+SQL> SELECT * FROM Logs WHERE Action = 'Account balance updated';
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+        19          2                                                           
+Account balance updated                                                         
+13-DEC-23 06.58.52.000000 PM                                                    
+                                                                                
+        20          5                                                           
+Account balance updated                                                         
+13-DEC-23 06.58.52.000000 PM                                                    
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+                                                                                
+        21          2                                                           
+Account balance updated                                                         
+13-DEC-23 07.00.09.000000 PM                                                    
+                                                                                
+        22          5                                                           
+Account balance updated                                                         
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+13-DEC-23 07.00.09.000000 PM                                                    
+                                                                                
+        23          2                                                           
+Account balance updated                                                         
+13-DEC-23 07.01.29.000000 PM                                                    
+                                                                                
+        24          5                                                           
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+Account balance updated                                                         
+13-DEC-23 07.01.29.000000 PM                                                    
+                                                                                
+        25          2                                                           
+Account balance updated                                                         
+13-DEC-23 07.03.37.000000 PM                                                    
+                                                                                
+
+     LOGID     USERID                                                           
+---------- ----------                                                           
+ACTION                                                                          
+--------------------------------------------------------------------------------
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+        26          5                                                           
+Account balance updated                                                         
+13-DEC-23 07.03.37.000000 PM                                                    
+                                                                                
+
+8 rows selected.
+
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

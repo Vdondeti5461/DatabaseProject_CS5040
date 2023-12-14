@@ -1,0 +1,7 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SP2-0310: unable to open file "packagesusecase.sql"
+SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off

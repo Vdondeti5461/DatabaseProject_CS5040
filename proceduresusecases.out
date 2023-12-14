@@ -1,0 +1,182 @@
+SQL> 
+SQL> -- Execute the script file. --
+SQL> start &&1
+SQL> -- Procedures Testing Usecase
+SQL> -- first procedure
+SQL> -- Create sequence, Create procedure and test below queries
+SQL> 
+SQL> -- add new user
+SQL> EXECUTE AddNewUser('Nikhil', 'nikhil123', 'nikhil@example.com');
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- test with exisiting user and check error
+SQL> EXECUTE AddNewUser('Nikhil', 'nikhil123', 'nikhil@example.com');
+BEGIN AddNewUser('Nikhil', 'nikhil123', 'nikhil@example.com'); END;
+
+*
+ERROR at line 1:
+ORA-20003: Error adding new user: ORA-20001: Username already exists. 
+ORA-06512: at "VDONDETI.ADDNEWUSER", line 35 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> -- second procedure
+SQL> -- No sequence is required as we are updating
+SQL> 
+SQL> -- update userprofile
+SQL> EXECUTE UpdateUserProfile(1, 'Jane', 'Doe', TO_DATE('1995-02-15', 'YYYY-MM-DD'), 'Canada');
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Throw invalid data format
+SQL> EXECUTE UpdateUserProfile(1, 'Jane', 'Doe', '1995-30-02', 'Canada');
+BEGIN UpdateUserProfile(1, 'Jane', 'Doe', '1995-30-02', 'Canada'); END;
+
+                                                                                       *
+ERROR at line 1:
+ORA-01861: literal does not match format string 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> -- Nonexisiting user ID
+SQL> EXECUTE UpdateUserProfile(999, 'Test', 'User', TO_DATE('2000-01-01', 'YYYY-MM-DD'), 'Testland');
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Third Procedure
+SQL> -- No Sequence is required
+SQL> 
+SQL> -- Update the new password to user
+SQL> EXECUTE ChangeUserPassword(1, 'newSecurePassword123');
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Throw error unknown user
+SQL> EXECUTE ChangeUserPassword(999, 'passwordForNonUser');
+BEGIN ChangeUserPassword(999, 'passwordForNonUser'); END;
+
+*
+ERROR at line 1:
+ORA-20023: Error occurred: ORA-20022: User not found. 
+ORA-06512: at "VDONDETI.CHANGEUSERPASSWORD", line 15 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> -- Fourth Procedure
+SQL> -- Create sequence, Create procedure and test below queries
+SQL> 
+SQL> -- Assuming the user with UserID 1 has sufficient funds and it will update account Balance
+SQL> EXECUTE ProcessWithdrawal(1, 100.00);
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- Throw error account not found
+SQL> EXECUTE ProcessWithdrawal(999, 50.00);
+BEGIN ProcessWithdrawal(999, 50.00); END;
+
+*
+ERROR at line 1:
+ORA-20012: Account not found. 
+ORA-06512: at "VDONDETI.PROCESSWITHDRAWAL", line 24 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> -- Fifth Procedure
+SQL> -- Create sequence, create procedure and test below queries
+SQL> 
+SQL> -- Assuming UserID 1 has a wallet and Deposit more
+SQL> EXECUTE RecordDeposit(1, 500.00);
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- to check deposit added to account to user
+SQL> SELECT * FROM Deposits WHERE WalletID = (SELECT WalletID FROM Wallets WHERE UserID = 1);
+
+ DEPOSITID   WALLETID     AMOUNT                                                
+---------- ---------- ----------                                                
+TIMESTAMP                                                                       
+---------------------------------------------------------------------------     
+         1          1       1000                                                
+13-DEC-23 06.44.57.000000 PM                                                    
+                                                                                
+        16          1        500                                                
+13-DEC-23 06.49.11.000000 PM                                                    
+                                                                                
+
+SQL> 
+SQL> -- Assuming UserID 999 does not have a wallet and throw error user wallet not found
+SQL> EXECUTE RecordDeposit(999, 100.00);
+BEGIN RecordDeposit(999, 100.00); END;
+
+*
+ERROR at line 1:
+ORA-20018: User wallet not found. 
+ORA-06512: at "VDONDETI.RECORDDEPOSIT", line 18 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> -- Sixth Procedure
+SQL> 
+SQL> -- login record
+SQL> EXECUTE RecordUserLogin(1, CURRENT_TIMESTAMP);
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> -- show recent login session for user
+SQL> SELECT * FROM UserSessions WHERE UserID = 1;
+
+ SESSIONID     USERID                                                           
+---------- ----------                                                           
+TOKEN                                                                           
+--------------------------------------------------------------------------------
+EXPIRESAT                                                                       
+---------------------------------------------------------------------------     
+         1          1                                                           
+token1                                                                          
+20-DEC-23 06.44.57.000000 PM                                                    
+                                                                                
+        16          1                                                           
+GeneratedToken                                                                  
+20-DEC-23 06.49.11.265642 PM                                                    
+
+ SESSIONID     USERID                                                           
+---------- ----------                                                           
+TOKEN                                                                           
+--------------------------------------------------------------------------------
+EXPIRESAT                                                                       
+---------------------------------------------------------------------------     
+                                                                                
+
+SQL> 
+SQL> -- throw error
+SQL> EXECUTE RecordUserLogin(999, CURRENT_TIMESTAMP);
+BEGIN RecordUserLogin(999, CURRENT_TIMESTAMP); END;
+
+*
+ERROR at line 1:
+ORA-20008: Error occurred: ORA-00001: unique constraint (VDONDETI.SYS_C0069554) 
+violated 
+ORA-06512: at "VDONDETI.RECORDUSERLOGIN", line 13 
+ORA-06512: at line 1 
+
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> SQL> 
+SQL> -- Restore the options to their default values. --
+SQL> spool off
