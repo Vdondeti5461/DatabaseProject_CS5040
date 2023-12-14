@@ -43,19 +43,19 @@ The project includes the following scripts:
 - To test the functionalities, use the respective use case scripts after running the main scripts.
 - Utilize the `select.sql` to view the data in the tables.
 
-Important Note : When we encounter any Unique constraint issue it might be due to data available in Database so try to change the values as it might be due to run script earlier.
+Important Note: When we encounter any Unique constraint issue it might be due to data available in the Database so try to change the values as it might be due to running the script earlier.
 
-#DROP Tables - Use the script DROP tables to drop all tables , inserted data , functions , procedures , Triggers , packages , Indexes.
+### To DROP objects - Use the script DROPObjexcts.sql to drop all tables, inserted data, functions, procedures, Triggers, packages, and Indexes.
 
-We have tested the files in Oracle live sql and apex sql . Below are the details for the same.
+We have tested the files in Oracle Live SQL and Apex SQL. Below are the details for the same.
 
-Apex_Environment:
+### Apex_Environment:
 
-Workspace:	financial_application
-Username:	vdondeti.naidu@gmail.com
-Environment:	https://apex.oracle.com/pls/apex/
-Password - Vamsi@12
+- Workspace: financial_application
+- Environment:	https://apex.oracle.com/pls/apex/
+- Username:	vdondeti.naidu@gmail.com
+- Password - Vamsi@12
 
-Oracle live sql - https://livesql.oracle.com/apex/livesql/s/z4k415zjbidot1hpl0ww0wbc
+### Oracle live SQL - https://livesql.oracle.com/apex/livesql/s/z4k415zjbidot1hpl0ww0wbc
 
-Please check live reports with logging into portal.
+Please check live reports by logging into the portal.
