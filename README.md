@@ -40,7 +40,7 @@ The project includes the following scripts:
    - Sequentially execute other scripts (`functions.sql`, `triggers.sql`, etc.) as per your requirement.
 
 ### Usage
-- To test the functionalities, use the respective use case scripts after running the main scripts.
+- To test the functionalities, use the respective `use case scripts` of all the objects after running the main scripts.
 - Utilize the `select.sql` to view the data in the tables.
 
 Important Note: When we encounter any Unique constraint issue it might be due to data available in the Database so try to change the values as it might be due to running the script earlier.
