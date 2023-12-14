@@ -47,7 +47,7 @@ Important Note: When we encounter any Unique constraint issue it might be due to
 
 ### To DROP objects - Use the script DROPObjexcts.sql to drop all tables, inserted data, functions, procedures, Triggers, packages, and Indexes.
 
-We have tested the files in Oracle Live SQL and Apex SQL. Below are the details for the same.
+We have tested the files in Oracle Live SQL and Apex SQL.
 
 ### Apex_Environment:
 
